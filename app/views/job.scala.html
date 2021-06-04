@@ -1,0 +1,11 @@
+@import helper._
+
+@(userForm: Form[JobForm])(implicit messages: Messages)
+
+@main("Job Form") {
+    <h1>Please state your job below:</h1>
+    @helper.form(action = routes.FormController.jobForm) {
+    @inputText(userForm("job"))
+    <input type="submit" value="Submit">
+}
+}

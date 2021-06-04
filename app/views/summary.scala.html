@@ -1,0 +1,12 @@
+@()(implicit session: Session)
+
+@main("Summary") {
+    <h1>Welcome to the Summary</h1>
+
+        <h3> Name: @session.get("name").getOrElse("No name inputted")</h3>
+        <h3> Age: @session.get("age").getOrElse("Unspecified")</h3>
+        <h3> Gender: @session.get("gender").getOrElse("Unspecified")</h3>
+        <h3> Job: @session.get("job").getOrElse("No current job specified")</h3>
+        <h3> Colours: @session.get("colour").getOrElse("No favourite colour")</h3>
+
+}
