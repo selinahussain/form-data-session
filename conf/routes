@@ -15,16 +15,16 @@ POST    /age                        controllers.FormController.submitAgeForm()
 GET     /age                        controllers.FormController.ageForm()
 
 +nocsrf
-POST    /job                        controllers.FormController.jobForm()
+POST    /job                        controllers.FormController.submitJobForm()
 GET     /job                        controllers.FormController.jobForm()
+
++nocsrf
+POST    /gender                     controllers.FormController.submitGenderForm()
+GET     /gender                     controllers.FormController.genderForm()
 
 +nocsrf
 POST    /colour                     controllers.FormController.colourForm()
 GET     /colour                     controllers.FormController.colourForm()
-
-+nocsrf
-POST    /gender                     controllers.FormController.genderForm()
-GET     /gender                     controllers.FormController.genderForm()
 
 
 GET     /summary                    controllers.HomeController.summary()

@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.data.Form
-import play.api.mvc.{AbstractController, AnyContent, BaseController, ControllerComponents, Request, Results}
+import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request, Results}
 import play.api.data.Forms.{boolean, mapping, number, text}
 
 import javax.inject.Inject
@@ -11,13 +11,19 @@ import javax.inject.Inject
 class FormController @Inject()(cc: ControllerComponents) extends AbstractController(cc) with play.api.i18n.I18nSupport{
 
   def nameForm() = Action{ implicit request: Request[AnyContent] =>
-    val receivedData = request.body.asFormUrlEncoded
 
-    val nameFromInput = receivedData.map{args =>
-      NameForm.form.fill(NameFormModel(args("Name").head))
-    }.getOrElse(NameForm.form)
+//    val receivedData = request.body.asFormUrlEncoded
+//
+//    val nameFromInput = receivedData.map{
+//      args =>
+//        println("args " + args)
+//      NameForm.form.fill(NameFormModel(args("name").head))
+//
+//    }.getOrElse(NameForm.form)
+//
+//    println("nameform " + nameFromInput)
+    Ok(views.html.name(NameForm.form.fill(NameFormModel(""))))
 
-    Ok(views.html.name(nameFromInput))
 
   }
 
@@ -25,8 +31,10 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
     NameForm.form.bindFromRequest().fold(
       formWithErrors => BadRequest(views.html.name(formWithErrors)),
-      success => Redirect(controllers.routes.FormController.ageForm()).withSession(request.session + ("name" -> s"$success.name}"))
+      success => Redirect(controllers.routes.FormController.ageForm())
+        .withSession(request.session + ("name" -> s"${success.name}"))
     )
+
   }
 
 
@@ -34,47 +42,91 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
     val receivedData = request.body.asFormUrlEncoded
 
-    val ageFromInput = receivedData.map{args =>
+    val ageFromInput = receivedData.map{
+      args =>
       AgeForm.form.fill(AgeFormModel(args("age").head.toInt))
     }.getOrElse(AgeForm.form)
 
-
+    println("agefomr " + request.session)
     Ok(views.html.age(ageFromInput))
 
   }
 
   def submitAgeForm() = Action { implicit request =>
 
-    AgeForm.form.bindFromRequest().fold(
+    AgeForm.form
+      .bindFromRequest()
+      .fold(
       formWithErrors => BadRequest(views.html.age(formWithErrors)),
-      success => Redirect(controllers.routes.FormController.genderForm()).withSession(request.session + ("age" -> s"${success.age}" ))
+      success => Redirect(controllers.routes.FormController.genderForm())
+        .withSession(request.session + ("age" -> s"${success.age}" ))
     )
+
   }
 
 
-  def genderForm() =Action{ implicit request: Request[AnyContent] =>
+  def genderForm() = Action { implicit request: Request[AnyContent] =>
+
+
     val receivedData = request.body.asFormUrlEncoded
-    println("gender " + receivedData)
 
-    val genderFromInput = receivedData.map{args =>
-      args("gender").head
-    }.getOrElse(Ok("Error"))
-    Ok(views.html.gender(GenderForm.form)).withSession(request.session + ("gender" -> s"$genderFromInput"))
+
+    val genderFromInput = receivedData.map{
+      args =>
+        GenderForm.form.fill(GenderFormModel(args("gender").head))
+    }.getOrElse(GenderForm.form)
+
+    println("genderform " + request.session)
+
+    Ok(views.html.gender(genderFromInput))
 
   }
+
+  def submitGenderForm() = Action { implicit request =>
+
+    GenderForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(views.html.gender(formWithErrors)),
+        success => Redirect(controllers.routes.FormController.jobForm())
+          .withSession(request.session + ("gender" -> s"${success.gender}" ))
+      )
+
+  }
+
+
+
 
   def jobForm() = Action { implicit request: Request[AnyContent] =>
 
     val receivedData = request.body.asFormUrlEncoded
 
-    val jobFromInput = receivedData.map{args =>
-      args("job").head
-    }.getOrElse(Ok("Error"))
+    val jobFromInput = receivedData.map{
+      args =>
+        JobForm.form.fill(JobFormModel(args("job").head))
 
-    Ok(views.html.job(JobForm.form)).withSession(request.session + ("job" -> s"$jobFromInput"))
+    }.getOrElse(JobForm.form)
 
+    println("jobform " + request.session)
+
+    Ok(views.html.job(jobFromInput))
 
   }
+
+  def submitJobForm() = Action { implicit request: Request[AnyContent] =>
+
+    JobForm.form
+      .bindFromRequest()
+      .fold(
+      formWithErrors => BadRequest(views.html.job(formWithErrors)),
+      success => Redirect(controllers.routes.FormController.colourForm())
+        .withSession(request.session + ("job" -> s"${success.job}" ))
+    )
+
+  }
+
+
+
 
   def colourForm() =Action{ implicit request: Request[AnyContent] =>
     val receivedData = request.body.asFormUrlEncoded
@@ -82,12 +134,16 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
     val coloursFromInput = receivedData.map{args =>
       args.keys
     }.getOrElse(Ok("Error"))
+    println("colour " + request.session)
 
-    Ok(views.html.colour(ColourForm.form)).withSession("colour" -> s"${coloursFromInput}")
+    Ok(views.html.colour(ColourForm.form)).withSession(request.session + ("colour" -> s"${coloursFromInput}"))
 
   }
 
+
 }
+
+
 
 
 
@@ -113,26 +169,25 @@ object AgeForm {
 
 }
 
-case class GenderForm(woman: Boolean, man: Boolean)
+case class GenderFormModel(gender: String)
 object GenderForm {
-  val form : Form[GenderForm] = Form(
+  val form : Form[GenderFormModel] = Form(
     mapping(
-      "woman" -> boolean,
-      "man" -> boolean
+      "gender" -> text
 
-    )(GenderForm.apply)(GenderForm.unapply)
+    )(GenderFormModel.apply)(GenderFormModel.unapply)
   )
 
 }
 
-case class JobForm(job: String)
+case class JobFormModel(job: String)
 object JobForm {
 
-  val form : Form[JobForm] = Form(
+  val form : Form[JobFormModel] = Form(
     mapping(
       "job" -> text
 
-    )(JobForm.apply)(JobForm.unapply)
+    )(JobFormModel.apply)(JobFormModel.unapply)
   )
 
 }
