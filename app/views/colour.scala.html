@@ -1,15 +1,13 @@
+
 @import helper._
 
-@(colour: Form[ColourForm])(implicit messages: Messages)
+@(colour: Form[ColourFormModel])(implicit messages: Messages)
 
 @main("Colour Form") {
     <h1>Select your favourite colour below</h1>
-        @helper.form(action = routes.FormController.colourForm) {
-        @checkbox(colour("blue"), '_label -> "blue", '_help -> " ")
-        @checkbox(colour("purple"), '_label -> "purple", '_help -> " ")
-        @checkbox(colour("green"), '_label -> "green", '_help -> " ")
-        @checkbox(colour("pink"), '_label -> "pink", '_help -> " ")
-        @checkbox(colour("red"), '_label -> "red", '_help -> " ")
+    @helper.form(action = routes.FormController.submitColourForm) {
+        @inputCheckboxGroup(colour("colour"),
+        options = Seq("red" -> "red", "green" -> "green", "blue" -> "blue"))
     <input type="submit" value="Submit">
-}
+    }
 }

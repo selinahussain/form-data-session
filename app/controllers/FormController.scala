@@ -2,7 +2,7 @@ package controllers
 
 import play.api.data.Form
 import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request, Results}
-import play.api.data.Forms.{boolean, mapping, number, text}
+import play.api.data.Forms.{boolean, list, mapping, number, text}
 
 import javax.inject.Inject
 
@@ -12,18 +12,7 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def nameForm() = Action{ implicit request: Request[AnyContent] =>
 
-//    val receivedData = request.body.asFormUrlEncoded
-//
-//    val nameFromInput = receivedData.map{
-//      args =>
-//        println("args " + args)
-//      NameForm.form.fill(NameFormModel(args("name").head))
-//
-//    }.getOrElse(NameForm.form)
-//
-//    println("nameform " + nameFromInput)
     Ok(views.html.name(NameForm.form.fill(NameFormModel(""))))
-
 
   }
 
@@ -40,15 +29,7 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def ageForm() = Action{ implicit request: Request[AnyContent] =>
 
-    val receivedData = request.body.asFormUrlEncoded
-
-    val ageFromInput = receivedData.map{
-      args =>
-      AgeForm.form.fill(AgeFormModel(args("age").head.toInt))
-    }.getOrElse(AgeForm.form)
-
-    println("agefomr " + request.session)
-    Ok(views.html.age(ageFromInput))
+    Ok(views.html.age(AgeForm.form.fill(AgeFormModel())))
 
   }
 
@@ -67,18 +48,7 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def genderForm() = Action { implicit request: Request[AnyContent] =>
 
-
-    val receivedData = request.body.asFormUrlEncoded
-
-
-    val genderFromInput = receivedData.map{
-      args =>
-        GenderForm.form.fill(GenderFormModel(args("gender").head))
-    }.getOrElse(GenderForm.form)
-
-    println("genderform " + request.session)
-
-    Ok(views.html.gender(genderFromInput))
+    Ok(views.html.gender(GenderForm.form.fill(GenderFormModel(""))))
 
   }
 
@@ -99,17 +69,7 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def jobForm() = Action { implicit request: Request[AnyContent] =>
 
-    val receivedData = request.body.asFormUrlEncoded
-
-    val jobFromInput = receivedData.map{
-      args =>
-        JobForm.form.fill(JobFormModel(args("job").head))
-
-    }.getOrElse(JobForm.form)
-
-    println("jobform " + request.session)
-
-    Ok(views.html.job(jobFromInput))
+    Ok(views.html.job(JobForm.form.fill(JobFormModel(""))))
 
   }
 
@@ -128,17 +88,25 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
 
 
-  def colourForm() =Action{ implicit request: Request[AnyContent] =>
-    val receivedData = request.body.asFormUrlEncoded
+  def colourForm() = Action { implicit request: Request[AnyContent] =>
 
-    val coloursFromInput = receivedData.map{args =>
-      args.keys
-    }.getOrElse(Ok("Error"))
-    println("colour " + request.session)
-
-    Ok(views.html.colour(ColourForm.form)).withSession(request.session + ("colour" -> s"${coloursFromInput}"))
+    Ok(views.html.colour(ColourForm.form.fill(ColourFormModel())))
 
   }
+
+
+  def submitColourForm() = Action { implicit request: Request[AnyContent] =>
+
+    ColourForm.form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => BadRequest(views.html.colour(formWithErrors)),
+        success => Redirect(controllers.routes.HomeController.summary())
+          .withSession(request.session + ("colour" -> s"${success.colour}" ))
+      )
+
+  }
+
 
 
 }
@@ -158,7 +126,7 @@ object NameForm {
 
 }
 
-case class AgeFormModel(age: Int)
+case class AgeFormModel(age: Int = 0)
 object AgeForm {
   val form : Form[AgeFormModel] = Form(
     mapping(
@@ -192,17 +160,13 @@ object JobForm {
 
 }
 
-case class ColourForm(blue: Boolean, purple: Boolean, green: Boolean, pink: Boolean, red: Boolean )
+case class ColourFormModel(colour: List[String] = List())
 object ColourForm {
-  val form : Form[ColourForm] = Form(
+  val form : Form[ColourFormModel] = Form(
     mapping(
-      "blue" -> boolean,
-      "purple" -> boolean,
-      "green" -> boolean,
-      "pink" -> boolean,
-      "red" -> boolean
+      "colour" -> list(text)
 
-    )(ColourForm.apply)(ColourForm.unapply)
+    )(ColourFormModel.apply)(ColourFormModel.unapply)
   )
 
 }

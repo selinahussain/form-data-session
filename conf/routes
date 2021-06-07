@@ -23,7 +23,7 @@ POST    /gender                     controllers.FormController.submitGenderForm(
 GET     /gender                     controllers.FormController.genderForm()
 
 +nocsrf
-POST    /colour                     controllers.FormController.colourForm()
+POST    /colour                     controllers.FormController.submitColourForm()
 GET     /colour                     controllers.FormController.colourForm()
 
 
