@@ -7,7 +7,7 @@
     <h1>Select your favourite colour below</h1>
     @helper.form(action = routes.FormController.submitColourForm) {
         @inputCheckboxGroup(colour("colour"),
-        options = Seq("red" -> "red", "green" -> "green", "blue" -> "blue"))
+        options = Seq("red" -> "red", "green" -> "green", "blue" -> "blue"), '_label -> "Colors", 'required -> "required")
     <input type="submit" value="Submit">
     }
 }

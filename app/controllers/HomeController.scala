@@ -19,16 +19,14 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
    * a path of `/`.
    */
   def index() = Action { implicit request: Request[AnyContent] =>
+
     Ok(views.html.index())
   }
 
   def summary = Action { implicit request: Request[AnyContent] =>
-    println("summary " + request.session)
-        Ok(views.html.summary())
 
-
+    Ok(views.html.summary())
 
   }
-
 
 }

@@ -1,8 +1,8 @@
 package controllers
 
 import play.api.data.Form
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request, Results}
-import play.api.data.Forms.{boolean, list, mapping, number, text}
+import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.data.Forms.{list, mapping, number, text}
 
 import javax.inject.Inject
 
@@ -90,7 +90,7 @@ class FormController @Inject()(cc: ControllerComponents) extends AbstractControl
 
   def colourForm() = Action { implicit request: Request[AnyContent] =>
 
-    Ok(views.html.colour(ColourForm.form.fill(ColourFormModel())))
+    Ok(views.html.colour(ColourForm.form.fill(ColourFormModel(List()))))
 
   }
 
@@ -160,7 +160,7 @@ object JobForm {
 
 }
 
-case class ColourFormModel(colour: List[String] = List())
+case class ColourFormModel(colour: List[String])
 object ColourForm {
   val form : Form[ColourFormModel] = Form(
     mapping(

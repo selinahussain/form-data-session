@@ -2,10 +2,20 @@ package controllers
 
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
+import play.api.Play.materializer
+import play.api.http.Status
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.{ControllerComponents, Headers}
 import play.api.test._
 import play.api.test.Helpers._
 
 class FormControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting {
+  lazy val controllerComponents: ControllerComponents = app.injector.instanceOf[ControllerComponents]
+
+  object testFormController extends FormController (
+    controllerComponents
+  )
+
 
   "FormController GET" should {
 
@@ -101,11 +111,165 @@ class FormControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting
       contentAsString(colour) must include ("colour")
     }
 
+  }
+
+  "FormController submitNameForm()  " should {
+
+    "the json body is valid " when {
+      val jsonBody: JsObject = Json.obj (
+        "name" -> "John"
+      )
+
+      "return redirect/see_other " in {
+
+        val result = testFormController.submitNameForm().apply(FakeRequest(POST, "/name").withJsonBody(jsonBody))
+        status(result) mustBe Status.SEE_OTHER
 
 
+      }
 
+    }
+
+    "the json body is invalid " when {
+
+      "return BadRequest " in {
+
+        val result = testFormController.submitAgeForm().apply(FakeRequest(POST, "/name"))
+        status(result) mustBe Status.BAD_REQUEST
+
+
+      }
+
+    }
 
   }
+
+  "FormController submitAgeForm()  " should {
+
+    "the json body is valid " when {
+      val jsonBody: JsObject = Json.obj (
+        "age" -> 23
+      )
+
+      "return redirect/see_other " in {
+
+        val result = testFormController.submitAgeForm().apply(FakeRequest(POST, "/age").withJsonBody(jsonBody))
+        status(result) mustBe Status.SEE_OTHER
+
+
+      }
+
+    }
+
+    "the json body is invalid " when {
+      val jsonBody: JsObject = Json.obj (
+        "age" -> "hfdshfh"
+      )
+
+      "return BadRequest " in {
+
+        val result = testFormController.submitAgeForm().apply(FakeRequest(POST, "/age").withJsonBody(jsonBody))
+        status(result) mustBe Status.BAD_REQUEST
+
+
+      }
+
+    }
+
+  }
+
+  "FormController submitGenderForm()  " should {
+
+    "the json body is valid " when {
+      val jsonBody: JsObject = Json.obj (
+        "gender" -> "Male"
+      )
+
+      "return redirect/see_other " in {
+
+        val result = testFormController.submitGenderForm().apply(FakeRequest(POST, "/gender").withJsonBody(jsonBody))
+        status(result) mustBe Status.SEE_OTHER
+
+
+      }
+
+    }
+
+    "the json body is invalid " when {
+
+      "return BadRequest " in {
+
+        val result = testFormController.submitGenderForm().apply(FakeRequest(POST, "/gender"))
+        status(result) mustBe Status.BAD_REQUEST
+
+
+      }
+
+    }
+
+  }
+
+  "FormController submitJobForm()  " should {
+
+    "the json body is valid " when {
+      val jsonBody: JsObject = Json.obj (
+        "job" -> "Developer"
+      )
+
+      "return redirect/see_other " in {
+
+        val result = testFormController.submitJobForm().apply(FakeRequest(POST, "/job").withJsonBody(jsonBody))
+        status(result) mustBe Status.SEE_OTHER
+
+
+      }
+
+    }
+
+    "the json body is invalid " when {
+
+      "return BadRequest " in {
+
+        val result = testFormController.submitJobForm().apply(FakeRequest(POST, "/job"))
+        status(result) mustBe Status.BAD_REQUEST
+
+
+      }
+
+    }
+
+  }
+
+  "FormController submitColourForm()  " should {
+
+    "the json body is valid " when {
+      val jsonBody: JsObject = Json.obj (
+        "colour" -> List("red", "blue")
+      )
+
+      "return redirect/see_other " in {
+
+        val result = testFormController.submitColourForm().apply(FakeRequest(POST, "/colour").withJsonBody(jsonBody))
+        status(result) mustBe Status.SEE_OTHER
+
+
+      }
+
+    }
+//
+//    "the json body is invalid " when {
+//
+//      "return BadRequest " in {
+//
+//        val result = testFormController.submitColourForm().apply(FakeRequest(POST, "/colour"))
+//        status(result) mustBe Status.BAD_REQUEST
+//
+//
+//      }
+//
+//    }
+//
+   }
 
 
 }

@@ -5,7 +5,7 @@
 @main("Age Form") {
     <h1>Please put your age below:</h1>
     @helper.form(action = routes.FormController.submitAgeForm) {
-    @inputText(age("age"))
+    @inputText(age("age"), 'required -> "required")
     <input type="submit" value="Submit">
     }
 }
